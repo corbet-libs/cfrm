@@ -37,7 +37,7 @@ pub fn router(limits: Limits) -> Result<Router, ErrorCode> {
     for host in &limits.hosts {
         let url = url::Url::parse(&format!("https://{host}")).map_err(|_| ErrorCode::Host)?;
         if url.host_str().is_none()
-            || url.username() != ""
+            || !url.username().is_empty()
             || url.password().is_some()
             || url.path() != "/"
             || url.query().is_some()

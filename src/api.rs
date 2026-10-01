@@ -153,9 +153,7 @@ pub fn openapi() -> Value {
 }
 
 fn schema<T: JsonSchema>() -> Value {
-    let settings = schemars::generate::SchemaSettings {
-        inline_subschemas: true,
-        ..Default::default()
-    };
+    let mut settings = schemars::generate::SchemaSettings::default();
+    settings.inline_subschemas = true;
     json!(settings.into_generator().into_root_schema_for::<T>())
 }
