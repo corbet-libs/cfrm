@@ -167,6 +167,9 @@ fn configuration_rejects_ambiguous_or_missing_boundaries() {
         assert!(router(value).is_err());
     }
     for host in [
+        "",
+        " ",
+        "@",
         "user@api.example.test",
         "user:password@api.example.test",
         ":password@api.example.test",
