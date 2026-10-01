@@ -33,7 +33,7 @@ accept the full versioned Call as arguments. `execute_tool` checks the tool name
 against that Call, applies the same strict byte decoder and invokes the same
 owner refusal. An MCP host must retain the original tools/call arguments; a JSON
 map that already discarded duplicate fields is not an acceptable input. The
-actual maintained rmcp model validates the generated catalog and typed error
+[maintained rmcp model](https://docs.rs/rmcp/latest/rmcp/model/index.html) validates the generated catalog and typed error
 shape in CI, alongside browser and AJV schema vectors. JSON-RPC negotiation and
 transport remain SDK responsibilities, never a new protocol engine here.
 

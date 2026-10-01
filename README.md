@@ -14,6 +14,6 @@ The former identity, accounting and SQL service implementation has been removed 
 
 ## Maintained dependencies
 
-Serde preserves exact typed wire bodies; Schemars derives JSON Schema; ts-rs derives TypeScript from the same Rust types; Axum owns HTTP routing and body limits; URL validates configured origins. No cryptographic primitive or policy evaluator is implemented here. The registry is the source for all routes and authorization metadata.
+Serde preserves exact typed wire bodies; Schemars derives JSON Schema; ts-rs derives TypeScript from the same Rust types; Axum owns HTTP routing and body limits; URL validates configured origins. The maintained [Rust MCP SDK](https://github.com/modelcontextprotocol/rust-sdk) checks the generated catalog and refusal shape in tests; it is not an exposed unauthenticated listener. No cryptographic primitive or policy evaluator is implemented here. The registry is the source for all routes and authorization metadata.
 
 See [the contract](docs/CONTRACT.md) for the open acceptance gates.
