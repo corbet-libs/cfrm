@@ -1,7 +1,7 @@
 name: ci
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.repository }}
+  cancel-in-progress: false
 permissions:
   contents: read
 jobs:
@@ -14,6 +14,9 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha || github.sha }}
         persist-credentials: false
     - uses: dtolnay/rust-toolchain@stable
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
     - name: Resolve one fresh dependency snapshot
       run: 'cargo update
 
@@ -23,13 +26,17 @@ jobs:
 
         date -u +%FT%TZ >> resolver.txt
 
-        sha256sum Cargo.lock >> resolver.txt'
+        sha256sum Cargo.lock >> resolver.txt
+
+        npm install --package-lock-only --ignore-scripts --no-audit --no-fund'
     - uses: actions/upload-artifact@v4
       with:
         name: resolved-lock
         path: 'Cargo.lock
 
-          resolver.txt'
+          resolver.txt
+
+          package-lock.json'
         retention-days: 7
   check:
     runs-on: ubuntu-latest
@@ -51,7 +58,7 @@ jobs:
     - name: Check formatting and retain a repair patch
       run: 'cargo fmt --all
 
-        git diff --exit-code > format.patch'
+        git diff --exit-code -- ''*.rs'' > format.patch'
       continue-on-error: false
     - uses: actions/upload-artifact@v4
       if: failure()
@@ -60,6 +67,15 @@ jobs:
         path: format.patch
     - run: cargo clippy --locked --all-targets -- -D warnings
     - run: cargo test --locked --all-targets
+    - run: cargo run --locked --example export
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+    - run: npx --yes --package typescript tsc --strict --noEmit --lib es2022,dom generated/client.ts
+    - uses: actions/upload-artifact@v4
+      with:
+        name: generated-api
+        path: generated/
     needs:
     - resolve
   dependency-policy:
@@ -130,7 +146,8 @@ jobs:
 'on':
   push:
     branches:
-    - '**'
+    - main
+    - candidate/**
   pull_request: null
   workflow_dispatch: null
 env:

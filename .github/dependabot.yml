@@ -18,23 +18,8 @@ updates:
     actions:
       patterns:
       - '*'
-- package-ecosystem: cargo
-  directory: /experiments/private-accounting/native
-  schedule:
-    interval: weekly
-  open-pull-requests-limit: 1
-- package-ecosystem: cargo
-  directory: /.ci/browser-bindgen
-  schedule:
-    interval: weekly
-  open-pull-requests-limit: 1
 - package-ecosystem: npm
   directory: /
-  schedule:
-    interval: weekly
-  open-pull-requests-limit: 1
-- package-ecosystem: npm
-  directory: /browser
   schedule:
     interval: weekly
   open-pull-requests-limit: 1
@@ -60,11 +45,6 @@ updates:
   open-pull-requests-limit: 1
 - package-ecosystem: npm
   directory: /experiments/private-accounting
-  schedule:
-    interval: weekly
-  open-pull-requests-limit: 1
-- package-ecosystem: npm
-  directory: /runtime/accounting
   schedule:
     interval: weekly
   open-pull-requests-limit: 1
