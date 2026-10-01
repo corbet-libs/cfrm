@@ -123,7 +123,11 @@ pub fn openapi() -> Value {
         paths.insert(format!("/v1/{}", action.name), json!({"post": {
             "operationId": action.name,
             "x-authority": action.requirement,
-            "requestBody": {"required":true,"content":{"application/json":{"schema":schema::<Call>()}}},
+            "requestBody": {"required":true,"content":{"application/json":{"schema":{
+                "allOf":[schema::<Call>(),{"properties":{
+                    "version":{"const":1},"request":{"properties":{"action":{"const":action.name}}}
+                }}]
+            }}}},
             "responses":{"503":{"description":"Required current authority unavailable","content":{"application/json":{"schema":schema::<Failure>()}}}}
         }}));
     }
