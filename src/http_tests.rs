@@ -169,6 +169,7 @@ fn configuration_rejects_ambiguous_or_missing_boundaries() {
     for host in [
         "user@api.example.test",
         "user:password@api.example.test",
+        ":password@api.example.test",
         "api.example.test/path",
         "api.example.test?x=1",
         "api.example.test#fragment",
@@ -195,7 +196,10 @@ struct RouterTransport(Router);
 impl Transport for RouterTransport {
     async fn post(&self, path: &str, body: Vec<u8>) -> Result<Vec<u8>, ErrorCode> {
         let response = self.0.clone().oneshot(request(path, body)).await.unwrap();
-        Ok(to_bytes(response.into_body(), 4096).await.unwrap().to_vec())
+        Ok(to_bytes(response.into_body(), 4096)
+            .await
+            .map_err(|_| ErrorCode::Transport)?
+            .to_vec())
     }
 }
 #[tokio::test]
@@ -214,4 +218,20 @@ async fn generated_rust_client_uses_real_http_refusal_without_domain_stubs() {
         result(reject(ErrorCode::Transport)).await,
         ErrorCode::Transport
     );
+    // Real malformed HTTP responses exercise transport failures without
+    // inventing a successful domain implementation.
+    let malformed = Router::new().route("/v1/challenge", post(|| async { "not-json" }));
+    assert!(matches!(
+        Client::new(RouterTransport(malformed), 4096)
+            .call(call().request)
+            .await,
+        Err(ErrorCode::Transport)
+    ));
+    let oversized = Router::new().route("/v1/challenge", post(|| async { vec![0_u8; 4097] }));
+    assert!(matches!(
+        Client::new(RouterTransport(oversized), 4096)
+            .call(call().request)
+            .await,
+        Err(ErrorCode::Transport)
+    ));
 }
