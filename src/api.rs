@@ -15,7 +15,9 @@ dto!(Possession { session: Vec<u8>, request_nonce: Vec<u8>, signature: Vec<u8> }
 dto!(EnterInput { challenge: Vec<u8>, signature: Vec<u8>, publication: Vec<u8>, record_proof: Vec<u8> });
 dto!(ReplaceInput { possession: Possession, expected_revision: Vec<u8>, publication: Vec<u8>, record_proof: Vec<u8> });
 dto!(HeartbeatInput { possession: Possession, expected_revision: Vec<u8> });
-dto!(DepartInput { possession: Possession });
+dto!(DepartInput {
+    possession: Possession
+});
 dto!(SearchInput { possession: Possession, cursor: Option<Vec<u8>>, page_size: u16 });
 dto!(WatchInput { possession: Possession, cursor: Vec<u8> });
 dto!(CiphertextInput { possession: Possession, owner: Vec<u8>, revision: Vec<u8> });
@@ -23,7 +25,11 @@ dto!(CiphertextInput { possession: Possession, owner: Vec<u8>, revision: Vec<u8>
 dto!(RoomInput { possession: Possession, command: Vec<u8> });
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
-pub enum Requirement { Credential, DeviceChallenge, CurrentDeviceSession }
+pub enum Requirement {
+    Credential,
+    DeviceChallenge,
+    CurrentDeviceSession,
+}
 
 pub struct ActionInfo {
     pub name: &'static str,
@@ -82,7 +88,10 @@ actions! {
     RoomHandover => "room_handover" (RoomInput) CurrentDeviceSession,
 }
 
-dto!(Call { version: u16, request: Request });
+dto!(Call {
+    version: u16,
+    request: Request
+});
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema, TS)]
 #[serde(rename_all = "snake_case")]
@@ -101,12 +110,21 @@ pub enum ErrorCode {
 dto!(Failure { error: ErrorCode });
 
 impl Call {
-    pub fn new(request: Request) -> Self { Self { version: 1, request } }
+    pub fn new(request: Request) -> Self {
+        Self {
+            version: 1,
+            request,
+        }
+    }
 
     pub fn decode(bytes: &[u8], maximum: usize) -> Result<Self, ErrorCode> {
-        if bytes.len() > maximum { return Err(ErrorCode::TooLarge); }
+        if bytes.len() > maximum {
+            return Err(ErrorCode::TooLarge);
+        }
         let call: Self = serde_json::from_slice(bytes).map_err(|_| ErrorCode::InvalidRequest)?;
-        if call.version != 1 { return Err(ErrorCode::UnsupportedVersion); }
+        if call.version != 1 {
+            return Err(ErrorCode::UnsupportedVersion);
+        }
         Ok(call)
     }
 }
