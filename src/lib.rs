@@ -7,3 +7,6 @@ pub use api::*;
 pub use client::*;
 #[cfg(all(feature = "server", not(target_arch = "wasm32")))]
 pub mod http;
+
+#[cfg(test)]
+mod portable_tests;

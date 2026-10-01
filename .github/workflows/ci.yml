@@ -67,6 +67,14 @@ jobs:
         path: format.patch
     - run: cargo clippy --locked --all-targets -- -D warnings
     - run: cargo test --locked --all-targets
+    - uses: taiki-e/install-action@v2
+      with:
+        tool: wasm-pack
+    - uses: browser-actions/setup-chrome@v1
+      with:
+        install-chromedriver: true
+    - name: Execute portable wire vectors in Chrome
+      run: wasm-pack test --headless --chrome --locked --no-default-features --lib
     - run: cargo run --locked --example export
     - uses: actions/setup-node@v4
       with:
